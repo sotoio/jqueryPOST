@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Ajax POST request with parameters example  </title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
+    <script type="text/javascript">
+    $(document).ready(function () {
+        GetallTourist()
+    });
+
+    //add traveler
+    $("#btnaddtraveler").on("click", function (e) {
+        e.preventDefault();//prevent default form submission on button click
+
+        //getting values from control
+        var txtName = $("#txttourist_name").val();
+        var txtEmail = $("#txttourist_email").val();
+        var txtaddress = $("#txttourist_location").val();
+
+        var postobj = {};
+        postobj.tourist_name = txtName;
+        postobj.tourist_email = txtEmail;
+        postobj.tourist_location = txtaddress;
+        $.ajax({
+            url: 'http://restapi.adequateshop.com/api/Tourist',
+            method: 'POST', //HTTP POST
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(postobj), //sending data to the sever
+            success: function (data) {
+                debugger;
+                //getting response from server
+                alert("Saved successfully");
+                //Binding the newly created row into the database
+                var tablerow = "<tr>"
+                    + "<td>" + data.id + "</td>"
+                    + "<td>" + "<img style='width:20px;border-radius:50px' src=" + data.tourist_profilepicture + ">" + data.tourist_name + "</td>"
+
+                    + "<td>" + data.tourist_email + "</td>"
+                    + "<td>" + data.tourist_location + "</td>"
+                    + "</tr>";
+                $("#tblbody").append(tablerow);
+                $("#txttourist_name").val('');
+                $("#txttourist_email").val('');
+                $("#txttourist_location").val('');
+            },
+            fail: function (jqXHR, textStatus) {
+                alert("Request failed: " + textStatus);
+            }
+        })
+
+
+    });
+    //Get All allTourist
+    function GetallTourist() {
+        $.ajax({
+            url: 'http://restapi.adequateshop.com/api/Tourist',
+            method: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (result) {
+                debugger;
+                if (result != null && result.data) {
+                    for (var i = 0; i < result.data.length; i++) {
+                        var tablerow = "<tr>"
+                            + "<td>" + result.data[i].id + "</td>"
+                            + "<td>" + "<img style='width:20px;border-radius:50px' src=" + result.data[i].tourist_profilepicture + ">" + result.data[i].tourist_name + "</td>"
+
+                            + "<td>" + result.data[i].tourist_email + "</td>"
+                            + "<td>" + result.data[i].tourist_location + "</td>"
+                            + "</tr>";
+                        $("#tblbody").append(tablerow);
+                    }
+                }
+            },
+            fail: function (jqXHR, textStatus) {
+                alert("Request failed: " + textStatus);
+            }
+        })
+    }
+</script>
+
+</head>
+<body>
+
+    <div class="container">
+        <h1> Ajax POST request with parameters example </h1>
+        <form id="addcustomerform">
+            <div class="form-group">
+                <label>Name:</label>
+                <input type="text" name="txttourist_name" id="txttourist_name" class="form-control" value="" required="">
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" name="txttourist_email" id="txttourist_email" class="form-control" value="" required="">
+            </div>
+            <div class="form-group">
+                <label>Location:</label>
+                <textarea class="form-control" name="txttourist_location" id="txttourist_location"></textarea>
+            </div>
+            <button type="submit" id="btnaddtraveler" class="btn btn-primary save-btn">add Traveler</button>
+            <fieldset>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>TouristName</th>
+                            <th>TouristEmail</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tblbody"></tbody>
+                </table>
+            </fieldset>
+        </form>
+        <br />
+    </div>
+</body>
+</html>
